@@ -32,6 +32,38 @@ function newOrder(request, response){
     }
 }
 
+function updateOrder(request, response){
+    var orderId = request.params.id;
+    var dataUpdate = request.body;
+
+    Order.findByIdAndUpdate(orderId, dataUpdate, function(error, orderUpdated){
+        if(error){
+            response.status(500).send({message: 'Error en la peticion!'});                   
+        }else if(!orderUpdated){
+            response.status(404).send({message: 'Error al editar orden!'});
+        }else{
+            response.status(200).send({order: orderUpdated});
+        }
+    });
+}
+
+function getOrder(request, response){
+    var orderId = request.params.id;
+
+    Order.findById(orderId).populate({path: 'user'}).exec((error, order) => {
+        if(error){
+            response.status(500).send({message: 'Error en la peticion!'});
+        }else if(!order){
+            response.status(404).send({message: 'La Orden no existe!'});
+        }else{
+            response.status(200).send({order});
+        }
+    });
+}
+
+
 module.exports = {
-    newOrder
+    newOrder,
+    updateOrder,
+    getOrder
 }

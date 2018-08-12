@@ -30,24 +30,16 @@ function newProduct(request, response){
 function updateProduct(request, response){
     var idProduct = request.params.id;
     var paramsByUpdate = request.body;
-
-    if(idProduct 
-        && paramsByUpdate.code 
-        && paramsByUpdate.name 
-        && paramsByUpdate.price
-    ){
-        Product.findByIdAndUpdate(idProduct, paramsByUpdate, function(error, productUpdated){
-            if(error){
-                response.status(500).send({message: 'Error al actualizar el producto!'});        
-            }else if(!productUpdated){
-                response.status(404).send({message: 'No se ha podido actualizar el producto!'});
-            }else{
-                response.status(200).send({poduct: productUpdated});
-            }
-        });
-    }else{
-        response.status(500).send({message: 'Llene los datos requeridos!'});
-    }
+    
+    Product.findByIdAndUpdate(idProduct, paramsByUpdate, function(error, productUpdated){
+        if(error){
+            response.status(500).send({message: 'Error al actualizar el producto!'});        
+        }else if(!productUpdated){
+            response.status(404).send({message: 'No se ha podido actualizar el producto!'});
+        }else{
+            response.status(200).send({poduct: productUpdated});
+        }
+    });
 }
 
 function getProduct(request, response){
