@@ -9,7 +9,7 @@ var OrderSchema = Schema({
     orderDate: String,
     deliveredOrderDate: String,
     idUser: { type: Schema.ObjectId, ref: 'User' },
-    totalToPay: Double
+    totalToPay: Number
 });
 
 module.exports = mongoose.model('Order', OrderSchema);
