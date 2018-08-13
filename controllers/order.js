@@ -2,6 +2,7 @@
 
 var Order = require('../models/order');
 var moment = require('moment');
+var mongoosePaginate = require('mongoose-pagination');
 
 function newOrder(request, response){
     var order = new Order();
@@ -11,12 +12,12 @@ function newOrder(request, response){
     order.state = params.state || '';
     order.orderDate = moment().unix();
     order.deliveredOrderDate = params.deliveredOrderDate || '';
-    order.idUser = params.idUser || '';
+    order.user = params.user || '';
     order.totalToPay = params.totalToPay || 0;
 
     if(order.orderNumber
         && order.state
-        && order.idUser
+        && order.user
     ){
         order.save(function(error, orderStored){
             if(error){
@@ -50,7 +51,7 @@ function updateOrder(request, response){
 function getOrder(request, response){
     var orderId = request.params.id;
 
-    Order.findById(orderId).populate({path: 'user'}).exec((error, order) => {
+    Order.findById(orderId).populate({path: 'user'}).exec(function(error, order){
         if(error){
             response.status(500).send({message: 'Error en la peticion!'});
         }else if(!order){
@@ -61,9 +62,40 @@ function getOrder(request, response){
     });
 }
 
+function getOrderList(request, response){
+    Order.find().sort('orderNumber').populate({path: 'user'}).exec(function(error, orders){
+        if(error){
+            response.status(500).send({message: 'Error en la peticion!'});
+        }else if(!orders){
+            response.status(404).send({message: 'No existen ordenes!'});
+        }else{
+            response.status(200).send({
+                orders: orders
+            });
+        }
+    });
+}
+
+function deleteOrder(request, response){
+    var orderId = request.params.id;
+
+    Order.findByIdAndRemove(orderId, function(error, orderDeleted){
+        if(error){
+            response.status(500).send({message: 'Error en la peticion!'});
+        }else if(!orderDeleted){
+            response.status(404).send({message: 'No se ha podido eliminar la orden o no existe!'});
+        }else{
+            response.status(200).send({
+                orderDeleted
+            });
+        }
+    });
+}
 
 module.exports = {
     newOrder,
     updateOrder,
-    getOrder
+    getOrder,
+    getOrderList,
+    deleteOrder
 }

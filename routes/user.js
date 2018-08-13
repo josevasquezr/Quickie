@@ -5,6 +5,6 @@ var UserController = require('../controllers/user');
 
 var api = express.Router();
 
-api.get('/probando-controlador', UserController.pruebas);
+api.get('/get-user-list', UserController.getUserList);
 
 module.exports = api;
