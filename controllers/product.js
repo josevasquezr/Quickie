@@ -10,6 +10,8 @@ function newProduct(request, response){
     product.code = params.code || '';
     product.name = params.name || '';
     product.description = params.description || '';
+    product.image = params.image || '';
+    product.category = params.category || '';
     product.price = params.price || '';
 
     if(product.code && product.name && product.price){

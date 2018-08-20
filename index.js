@@ -5,7 +5,7 @@ var app = require('./app');
 var port = process.env.PORT || 3977;
 
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/quickieDB', (error, response) => {
+mongoose.connect('mongodb://josevasquezr:proyectoindustria2018@ds125602.mlab.com:25602/quickiedb', (error, response) => {
     if(error){
         throw error;
     }else{
