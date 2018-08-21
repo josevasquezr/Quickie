@@ -56,15 +56,38 @@ function deleteOrderDetail(request, response){
         filterForDelete.product = productId;
     }
 
-    OrderDetail.deleteOne(filterForDelete, function(error, orderDetailDeleted){
+    OrderDetail.find(filterForDelete, function(error, orderDetails){
         if(error){
             response.status(500).send({message: 'Error en la peticion!'});
-        }else if(!orderDetailDeleted){
-            response.status(404).send({message: 'No se ha podido eliminar el detalle de la orden!'});
+        }else if(!orderDetails){
+            response.status(404).send({message: 'No existe detalle de la orden!'});
         }else{
-            response.status(200).send({
-                orderDetailDeleted
+            orderDetails.remove(function(error, orderDetailsDeleted){
+                if(error){
+                    response.status(500).send({message: 'Error en la peticion!'});
+                }else if(!orderDetailsDeleted){
+                    response.status(404).send({message: 'Error al borrar detalle de orden!'});
+                }else{
+                    response.status(200).send({
+                        orderDetailsDeleted
+                    });
+                }
             });
+        }
+    });
+}
+
+function updateOrderDetail(request, response){
+    var orderDetailId = request.params.id;
+    var paramsByUpdate = request.body;
+    
+    OrderDetail.findByIdAndUpdate(orderDetailId, paramsByUpdate, function(error, orderDetailUpdated){
+        if(error){
+            response.status(500).send({message: 'Error en la peticion!'});        
+        }else if(!orderDetailUpdated){
+            response.status(404).send({message: 'No se ha podido actualizar el detalle de la orden!'});
+        }else{
+            response.status(200).send({orderDetail: orderDetailUpdated});
         }
     });
 }
@@ -72,5 +95,6 @@ function deleteOrderDetail(request, response){
 module.exports = {
     getOrderDetail,
     newOrderDetail,
-    deleteOrderDetail
+    deleteOrderDetail,
+    updateOrderDetail
 }
