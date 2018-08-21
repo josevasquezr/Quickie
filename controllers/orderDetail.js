@@ -1,7 +1,6 @@
 'use strict'
 
 var OrderDetail = require('../models/orderDetail');
-var mongoosePaginate = require('mongoose-pagination');
 
 function newOrderDetail(request, response){
     var params = request.body;
