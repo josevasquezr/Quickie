@@ -1,6 +1,8 @@
 'use strict'
 
 var Product = require('../models/product');
+var fs = require('fs');
+var path = require('path');
 var mongoosePaginate = require('mongoose-pagination');
 
 function newProduct(request, response){
@@ -94,10 +96,70 @@ function deleteProduct(request, response){
     });
 }
 
+function uploadImage(request, response) {
+	var productId = request.params.id;
+	var file_name = 'No subido...';
+
+	if (request.files) {
+		var file_path = request.files.image.path;
+		var file_split = file_path.split('\\');
+		var file_name = file_split[2];
+		var ext_split = file_name.split('\.');
+		var ext = ext_split[1];
+
+		if (ext === 'png' || ext === 'jpg' || ext === 'gif') {
+			Product.findByIdAndUpdate(productId, {
+				image: file_name
+			}, (error, productUpdated) => {
+				if (error) {
+					response.status(500).send({
+						message: 'Error al actualizar imagen del producto'
+					});
+				} else {
+					if (productUpdated) {
+						response.status(200).send({
+							product: productUpdated
+						});
+					} else {
+						response.status(404).send({
+							message: 'No se pudo actualizar la imagen del producto'
+						});
+					}
+				}
+			});
+		} else {
+			response.status(200).send({
+				message: 'EL archivo no es válido.'
+			});
+		}
+
+	} else {
+		response.status(200).send({
+			message: 'No has subido ninguna imagen...'
+		});
+	}
+}
+
+function getImageFile(request, response) {
+	var imageFile = request.params.imageFile;
+	var path_file = './uploads/products/' + imageFile;
+	fs.exists(path_file, function(exist) {
+		if (exist) {
+			response.sendFile(path.resolve(path_file));
+		} else {
+			response.status(200).send({
+				message: 'No existe la imagen...'
+			});
+		}
+	});
+}
+
 module.exports = {
     newProduct,
     updateProduct,
     getProduct,
     getProductList,
-    deleteProduct
+    deleteProduct,
+    uploadImage,
+    getImageFile
 }
