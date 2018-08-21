@@ -56,25 +56,39 @@ function deleteOrderDetail(request, response){
         filterForDelete.product = productId;
     }
 
-    OrderDetail.find(filterForDelete, function(error, orderDetails){
-        if(error){
-            response.status(500).send({message: 'Error en la peticion!'});
-        }else if(!orderDetails){
-            response.status(404).send({message: 'No existe detalle de la orden!'});
-        }else{
-            orderDetails.remove(function(error, orderDetailsDeleted){
-                if(error){
-                    response.status(500).send({message: 'Error en la peticion!'});
-                }else if(!orderDetailsDeleted){
-                    response.status(404).send({message: 'Error al borrar detalle de orden!'});
-                }else{
-                    response.status(200).send({
-                        orderDetailsDeleted
-                    });
-                }
-            });
-        }
-    });
+    if(filterForDelete.order && filterForDelete.product){
+        OrderDetail.find(filterForDelete, function(error, orderDetail){
+            if(error){
+                response.status(500).send({message: 'Error en la peticion!'});
+            }else if(!orderDetail){
+                response.status(404).send({message: 'No existe detalle de la orden!'});
+            }else{
+                orderDetail.remove(function(error, orderDetailDeleted){
+                    if(error){
+                        response.status(500).send({message: 'Error en la peticion!'});
+                    }else if(!orderDetailDeleted){
+                        response.status(404).send({message: 'Error al borrar detalle de orden!'});
+                    }else{
+                        response.status(200).send({
+                            orderDetailDeleted
+                        });
+                    }
+                });
+            }
+        });
+    }else if(filterForDelete.order && !filterForDelete.product){
+        OrderDetail.deleteMany(filterForDelete, function(error, orderDetailDeleted){
+            if(error){
+                response.status(500).send({message: 'Error en la peticion!'});
+            }else if(!orderDetail){
+                response.status(404).send({message: 'No existe detalle de la orden!'});
+            }else{
+                response.status(200).send({
+                    orderDetailDeleted
+                });
+            }
+        });
+    }
 }
 
 function updateOrderDetail(request, response){
